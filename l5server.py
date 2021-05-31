@@ -1,21 +1,35 @@
 import socket
+import os
+from _thread import *
 
-s = socket.socket()
-print("Berjaya buat sokett")
+ServerSocket = socket.socket()
+host = ''
+port = 8889
+ThreadCount = 0
+try:
+    ServerSocket.bind((host, port))
+except socket.error as e:
+    print(str(e))
 
-port = 8888
+print('Waiting for a Connection..')
+ServerSocket.listen(5)
 
-s.bind(('', port))
-print("Berjaya bind soket di port: " + str(port))
-
-s.listen(5)
-print("soket tengah menunggu client!")
+def threaded_client(connection):
+    connection.send(str.encode('Welcome to the Server\n'))
+    while True:
+        data = connection.recv(2048)
+        reply = 'Server Says: ' + data.decode('utf-8')
+        print(data)
+        if not data:
+            break
+        connection.sendall(str.encode(reply))
+    connection.close()
 
 while True:
-        c, addr = s.accept()
-        print("Dapat capaian dari: " + str(addr))
+    Client, address = ServerSocket.accept()
+    print('Connected to: ' + address[0] + ':' + str(address[1]))
+    start_new_thread(threaded_client, (Client, ))
+    ThreadCount += 1
+    print('Thread Number: ' + str(ThreadCount))
+ServerSocket.close()
 
-        c.send(b'Terima Kasih!')
-        buffer = c.recv(1024)
-        print(buffer)
-c.close()
