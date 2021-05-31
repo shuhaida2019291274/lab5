@@ -23,4 +23,5 @@ while True:
         c.sendall(bytes(sendData,encoding="utf-8"))
         buffer = c.recv(1024)
         print(buffer)
+        exit()
 c.close()
