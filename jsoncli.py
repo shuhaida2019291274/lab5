@@ -1,21 +1,22 @@
 import socket
 import sys
-import json
 
 s = socket.socket()
-
+host = '192.168.56.103'
 port = 8080
 
-s.connect(('192.168.56.103', port))
+s.connect((host, port))
 
-data = s.recv(1024)
-data = data.decode("utf-8")
+filename='secret.txt'
+f = open(filename, 'rb')
+l = f.read(1024)
+while(l):
+    s.send(l)
+    print('Sending to server ', repr(l))
+    l = f.read(1024)
+f.close()
 
-s.send(b'Thank you from client!');
-
-dataJ = json.loads(data)
-
-print (type(dataJ))
-print(dataJ)
-
+print('Done sending file to server...')
+s.send(b'Thank you from client!')
 s.close()
+
