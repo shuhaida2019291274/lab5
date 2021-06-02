@@ -1,26 +1,31 @@
 import socket
 import sys
-import json
-
-mydata = {"id": 505012, "name": "Azizi", "age": "29"}
-sendData = json.dumps(mydata)
 
 s = socket.socket()
-print("Socket successfully created")
+print("Socket successfully created...")
 
 port = 8080
 
 s.bind(('', port))
-print("socket binded to " + str(port))
+print("Socket binded to " + str(port))
 
 s.listen(5)
-print("socket is listening")
+print("Socket is listening...")
 
 while True:
         c, addr = s.accept()
         print("Got connection from" + str(addr))
-
-        c.sendall(bytes(sendData,encoding="utf-8"))
-        buffer = c.recv(1024)
-        print(buffer)
+        with open('secret.txt', 'wb') as f:
+            print('Opening file...')
+            print('Receiving file from client...')
+            data = c.recv(1024)
+            print('Data from file: ', (data))
+            if not data:
+                break
+            f.write(data)
+        f.close()
+        c.close()
+        print('Successfully get the file from client...')
+        print('Server is closing the connection...')
+        exit()
 c.close()
